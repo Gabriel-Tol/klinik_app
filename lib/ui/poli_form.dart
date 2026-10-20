@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../model/poli.dart';
-import 'poli_detail.dart';
 
 class PoliForm extends StatefulWidget {
   const PoliForm({super.key});
@@ -49,10 +48,7 @@ class _PoliFormState extends State<PoliForm> {
     return ElevatedButton(
       onPressed: () {
         final poli = Poli(namaPoli: _namaPoliCtrl.text);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => PoliDetail(poli: poli)),
-        );
+        Navigator.pop(context, poli);
       },
       child: const Text("Simpan"),
     );

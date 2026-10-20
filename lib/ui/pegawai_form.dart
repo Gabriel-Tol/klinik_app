@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../model/pegawai.dart';
-import 'pegawai_detail.dart';
 
 class PegawaiForm extends StatefulWidget {
   const PegawaiForm({super.key});
@@ -60,12 +59,7 @@ class _PegawaiFormState extends State<PegawaiForm> {
                     email: _emailCtrl.text,
                     password: _passwordCtrl.text,
                   );
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PegawaiDetail(pegawai: pegawai),
-                    ),
-                  );
+                  Navigator.pop(context, pegawai);
                 },
                 child: const Text("Simpan"),
               ),

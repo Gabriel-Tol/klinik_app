@@ -20,15 +20,9 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
       body: Column(
         children: [
           SizedBox(height: 20),
-          Text(
-            "NIP : ${widget.pegawai.nip}",
-            style: TextStyle(fontSize: 20),
-          ),
+          Text("NIP : ${widget.pegawai.nip}", style: TextStyle(fontSize: 20)),
           SizedBox(height: 12),
-          Text(
-            "Nama : ${widget.pegawai.nama}",
-            style: TextStyle(fontSize: 20),
-          ),
+          Text("Nama : ${widget.pegawai.nama}", style: TextStyle(fontSize: 20)),
           SizedBox(height: 12),
           Text(
             "Tanggal Lahir : ${widget.pegawai.tanggalLahir}",
@@ -69,17 +63,37 @@ class _PegawaiDetailState extends State<PegawaiDetail> {
                     });
                   }
                 },
-                style:
-                    ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 child: const Text("Ubah"),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final konfirmasi = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Hapus Pegawai"),
+                      content: Text("Hapus ${widget.pegawai.nama}?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Batal"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Hapus"),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (konfirmasi == true && mounted) {
+                    Navigator.pop(context, true);
+                  }
+                },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text("Hapus"),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

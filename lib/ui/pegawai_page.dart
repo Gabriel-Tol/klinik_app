@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../model/pegawai.dart';
 import 'pegawai_form.dart';
 import 'pegawai_item.dart';
+import 'pegawai_detail.dart';
 
 class PegawaiPage extends StatefulWidget {
   const PegawaiPage({super.key});
@@ -39,26 +40,43 @@ class _PegawaiPageState extends State<PegawaiPage> {
     ),
   ];
 
+  Future<void> _tambahPegawai() async {
+    final pegawai = await Navigator.push<Pegawai>(
+      context,
+      MaterialPageRoute(builder: (context) => const PegawaiForm()),
+    );
+    if (!mounted || pegawai == null) return;
+
+    setState(() => daftarPegawai.add(pegawai));
+    final dihapus = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => PegawaiDetail(pegawai: pegawai)),
+    );
+    if (!mounted) return;
+    setState(() {
+      if (dihapus == true) daftarPegawai.remove(pegawai);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Data Pegawai"),
         actions: [
-          GestureDetector(
-            child: const Icon(Icons.add),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PegawaiForm()),
-              );
-            },
-          ),
+          GestureDetector(child: const Icon(Icons.add), onTap: _tambahPegawai),
         ],
       ),
       body: ListView(
         children: daftarPegawai
-            .map((pegawai) => PegawaiItem(pegawai: pegawai))
+            .map(
+              (pegawai) => PegawaiItem(
+                pegawai: pegawai,
+                onDetailClosed: (dihapus) => setState(() {
+                  if (dihapus) daftarPegawai.remove(pegawai);
+                }),
+              ),
+            )
             .toList(),
       ),
     );

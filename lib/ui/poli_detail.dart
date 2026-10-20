@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../model/poli.dart';
 import 'poli_update_form.dart';
 
@@ -26,11 +27,8 @@ class _PoliDetailState extends State<PoliDetail> {
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _tombolUbah(),
-              _tombolHapus(),
-            ],
-          )
+            children: [_tombolUbah(), _tombolHapus()],
+          ),
         ],
       ),
     );
@@ -56,7 +54,26 @@ class _PoliDetailState extends State<PoliDetail> {
 
   Widget _tombolHapus() {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () async {
+        final konfirmasi = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Hapus Poli"),
+            content: Text("Hapus ${widget.poli.namaPoli}?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Batal"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Hapus"),
+              ),
+            ],
+          ),
+        );
+        if (konfirmasi == true && mounted) Navigator.pop(context, true);
+      },
       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
       child: const Text("Hapus"),
     );

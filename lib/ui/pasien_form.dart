@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../model/pasien.dart';
-import 'pasien_detail.dart';
 
 class PasienForm extends StatefulWidget {
   const PasienForm({super.key});
@@ -52,12 +51,7 @@ class _PasienFormState extends State<PasienForm> {
                     nomorTelepon: _nomorTeleponCtrl.text,
                     alamat: _alamatCtrl.text,
                   );
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PasienDetail(pasien: pasien),
-                    ),
-                  );
+                  Navigator.pop(context, pasien);
                 },
                 child: const Text("Simpan"),
               ),

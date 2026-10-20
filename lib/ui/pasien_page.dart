@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../model/pasien.dart';
 import 'pasien_form.dart';
 import 'pasien_item.dart';
+import 'pasien_detail.dart';
 
 class PasienPage extends StatefulWidget {
   const PasienPage({super.key});
@@ -36,26 +37,43 @@ class _PasienPageState extends State<PasienPage> {
     ),
   ];
 
+  Future<void> _tambahPasien() async {
+    final pasien = await Navigator.push<Pasien>(
+      context,
+      MaterialPageRoute(builder: (context) => const PasienForm()),
+    );
+    if (!mounted || pasien == null) return;
+
+    setState(() => daftarPasien.add(pasien));
+    final dihapus = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (context) => PasienDetail(pasien: pasien)),
+    );
+    if (!mounted) return;
+    setState(() {
+      if (dihapus == true) daftarPasien.remove(pasien);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Data Pasien"),
         actions: [
-          GestureDetector(
-            child: const Icon(Icons.add),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PasienForm()),
-              );
-            },
-          ),
+          GestureDetector(child: const Icon(Icons.add), onTap: _tambahPasien),
         ],
       ),
       body: ListView(
         children: daftarPasien
-            .map((pasien) => PasienItem(pasien: pasien))
+            .map(
+              (pasien) => PasienItem(
+                pasien: pasien,
+                onDetailClosed: (dihapus) => setState(() {
+                  if (dihapus) daftarPasien.remove(pasien);
+                }),
+              ),
+            )
             .toList(),
       ),
     );
