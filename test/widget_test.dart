@@ -1,22 +1,33 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:klinik_app/main.dart';
 
+Future<void> _bukaDrawer(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.menu));
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('Home menampilkan menu Poli, Pegawai, dan Pasien',
+  testWidgets('Beranda menampilkan Selamat Datang dan menu sidebar',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    expect(find.text('Data Poli'), findsOneWidget);
-    expect(find.text('Data Pegawai'), findsOneWidget);
-    expect(find.text('Data Pasien'), findsOneWidget);
+    expect(find.text('Selamat Datang'), findsOneWidget);
+
+    await _bukaDrawer(tester);
+    expect(find.text('Poli'), findsOneWidget);
+    expect(find.text('Pegawai'), findsOneWidget);
+    expect(find.text('Pasien'), findsOneWidget);
+    expect(find.text('Keluar'), findsOneWidget);
   });
 
-  testWidgets('Menu Data Poli membuka list lalu detail Poli Anak',
+  testWidgets('Menu Poli dari sidebar membuka list lalu detail Poli Anak',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await _bukaDrawer(tester);
 
-    await tester.tap(find.text('Data Poli'));
+    await tester.tap(find.text('Poli'));
     await tester.pumpAndSettle();
     expect(find.text('Poli Anak'), findsOneWidget);
 
@@ -26,11 +37,12 @@ void main() {
     expect(find.text('Nama Poli : Poli Anak'), findsOneWidget);
   });
 
-  testWidgets('Menu Data Pegawai membuka list lalu detail pegawai',
+  testWidgets('Menu Pegawai dari sidebar membuka list lalu detail pegawai',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await _bukaDrawer(tester);
 
-    await tester.tap(find.text('Data Pegawai'));
+    await tester.tap(find.text('Pegawai'));
     await tester.pumpAndSettle();
     expect(find.text('Budi Santoso'), findsOneWidget);
 
@@ -41,11 +53,12 @@ void main() {
     expect(find.text('Email : budi@klinik.id'), findsOneWidget);
   });
 
-  testWidgets('Menu Data Pasien membuka list lalu detail pasien',
+  testWidgets('Menu Pasien dari sidebar membuka list lalu detail pasien',
       (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await _bukaDrawer(tester);
 
-    await tester.tap(find.text('Data Pasien'));
+    await tester.tap(find.text('Pasien'));
     await tester.pumpAndSettle();
     expect(find.text('Rina Marlina'), findsOneWidget);
 

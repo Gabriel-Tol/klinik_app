@@ -21,7 +21,8 @@ Required order for verification: `flutter analyze` → `flutter test`.
 
 ## Architecture
 
-- Entry point: `lib/main.dart` — `MaterialApp` (title `Klinik APP`, banner off) → `home: HomePage()`. (It uses a root-relative import `import '/ui/home_page.dart';`; every other file uses normal relative imports.)
+- Entry point: `lib/main.dart` — `MaterialApp` (title `Klinik`, banner off) → `home: Beranda()` (`ui/beranda.dart`). The former entry point `lib/ui/home_page.dart` (dashboard with the 3 menus) is no longer the app home and is not reachable from the sidebar.
+- `lib/widget/sidebar.dart` = `Drawer` used by `Beranda` and `PoliPage`: Beranda / Poli / Pegawai / Pasien (all pushed via `Navigator.push`) and Keluar (`pushAndRemoveUntil` to `Login`, clearing the stack).
 - `lib/ui/home_page.dart` = dashboard with 3 menus (Data Poli / Data Pegawai / Data Pasien), each pushing its list page. The same pattern repeats per entity (`poli` / `pegawai` / `pasien`): `*_page` (list, sample data hardcoded in a State field) → `*_item` (row, tap → detail) → `*_detail` (shows fields + Ubah/Hapus buttons) → `*_form` (add) / `*_update_form` (edit). All three lists are fully wired; each list page's AppBar "+" adds an item.
 - Deletion propagates via `Navigator.pop(context, true)` from the detail page → `onDeleted` callback on the item → `setState` remove in the list page. Edits mutate the shared model object in place (`widget.poli.namaPoli = ...`), so the list reflects changes without any notification — the same instance lives in the list.
 - Data classes in `lib/model/` (`Poli`, `Pegawai`, `Pasien`) — mutable fields, camelCase names, unused `id` field. Forms pop the new/edited model with no validation: `_formKey` exists but `validate()` is never called and fields have no validators. Data is in-memory only; nothing persists across restarts.
@@ -33,5 +34,5 @@ Required order for verification: `flutter analyze` → `flutter test`.
 
 - `pubspec.yaml` requires Dart `^3.13.4` (Flutter 3.47.5 stable in this environment) — older SDKs will not resolve dependencies. The SDK pin matters even though current `main.dart` has no exotic syntax.
 - `analysis_options.yaml` excludes `build/**`, `android/**`, `ios/**`, `web/**`, `windows/**`, `macos/**`, `linux/**`. Never expect `flutter analyze` to catch problems in platform folders.
-- `test/widget_test.dart` pumps `MyApp` and walks each dashboard menu → list → detail. Change the home screen or sample data → update it in the same change. It uses a `package:` import for `main.dart` (`avoid_relative_lib_imports` must stay clean).
+- `test/widget_test.dart` pumps `MyApp` and walks Beranda → sidebar drawer → each list → detail. Change the home screen, sidebar or sample data → update it in the same change. It uses a `package:` import for `main.dart` (`avoid_relative_lib_imports` must stay clean).
 - Platform directories (`android/`, `ios/`, `windows/`, `linux/`, `macos/`, `web/`) are Flutter-generated scaffolding; edit them only when the change is genuinely platform-specific.
