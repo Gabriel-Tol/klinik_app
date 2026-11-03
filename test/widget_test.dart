@@ -1,17 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:klinik_app/main.dart';
+import 'package:klinik_app/ui/beranda.dart';
+import 'package:klinik_app/ui/login.dart';
 
 Future<void> _bukaDrawer(WidgetTester tester) async {
   await tester.tap(find.byIcon(Icons.menu));
   await tester.pumpAndSettle();
 }
 
+Future<void> _isiLogin(WidgetTester tester, String user, String pass) async {
+  await tester.enterText(find.byType(TextFormField).at(0), user);
+  await tester.enterText(find.byType(TextFormField).at(1), pass);
+  await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+  await tester.pumpAndSettle();
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
+  testWidgets('Login gagal menampilkan pesan tidak valid',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp(home: Login()));
+
+    await _isiLogin(tester, 'salah', 'salah');
+    expect(find.text('Username atau Password Tidak Valid'), findsOneWidget);
+  });
+
+  testWidgets('Login admin/admin membuka Beranda',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp(home: Login()));
+
+    await _isiLogin(tester, 'admin', 'admin');
+    expect(find.text('Selamat Datang'), findsOneWidget);
+  });
+
   testWidgets('Beranda menampilkan Selamat Datang dan menu sidebar',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(home: Beranda()));
 
     expect(find.text('Selamat Datang'), findsOneWidget);
 
@@ -24,7 +53,7 @@ void main() {
 
   testWidgets('Menu Poli dari sidebar membuka list lalu detail Poli Anak',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(home: Beranda()));
     await _bukaDrawer(tester);
 
     await tester.tap(find.text('Poli'));
@@ -39,7 +68,7 @@ void main() {
 
   testWidgets('Menu Pegawai dari sidebar membuka list lalu detail pegawai',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(home: Beranda()));
     await _bukaDrawer(tester);
 
     await tester.tap(find.text('Pegawai'));
@@ -55,7 +84,7 @@ void main() {
 
   testWidgets('Menu Pasien dari sidebar membuka list lalu detail pasien',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(home: Beranda()));
     await _bukaDrawer(tester);
 
     await tester.tap(find.text('Pasien'));
@@ -71,7 +100,7 @@ void main() {
 
   testWidgets('Hapus pegawai minta konfirmasi: Batal batal, Hapus menghapus',
       (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MyApp(home: Beranda()));
     await _bukaDrawer(tester);
     await tester.tap(find.text('Pegawai'));
     await tester.pumpAndSettle();

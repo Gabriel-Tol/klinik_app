@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../service/login_service.dart';
+import 'beranda.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -69,7 +72,32 @@ class _LoginState extends State<Login> {
   Widget _tombolLogin() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      child: ElevatedButton(onPressed: () {}, child: const Text("Login")),
+      child:
+          ElevatedButton(onPressed: _prosesLogin, child: const Text("Login")),
     );
+  }
+
+  Future<void> _prosesLogin() async {
+    final valid =
+        await LoginService().login(_usernameCtrl.text, _passwordCtrl.text);
+    if (!mounted) return;
+    if (valid) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const Beranda()));
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: const Text("Username atau Password Tidak Valid"),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }

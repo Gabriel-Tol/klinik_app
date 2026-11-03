@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 
+import 'helpers/user_info.dart';
 import 'ui/beranda.dart';
+import 'ui/login.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final token = await UserInfo().getToken();
+  runApp(MyApp(home: token == null ? const Login() : const Beranda()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget home;
+
+  const MyApp({super.key, required this.home});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      title: 'Klinik APP',
       debugShowCheckedModeBanner: false,
-      title: 'Klinik',
-      home: Beranda(),
+      home: home,
     );
   }
 }
