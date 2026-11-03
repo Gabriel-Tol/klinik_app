@@ -11,15 +11,21 @@ Single-package Flutter app (clinic / klinik app). No monorepo, no CI, no `openco
 
 Required order for verification: `flutter analyze` → `flutter test`.
 
+## Git
+
+- Always commit and push when a change is finished: verify (`flutter analyze` → `flutter test`) → `git add` → `git commit` → `git push origin main`. Never leave finished work uncommitted.
+
 ## Verify before trusting analyze
 
 - `flutter test` passes even if unreferenced code is broken — check `flutter analyze` too.
 
 ## Architecture
 
-- Entry point: `lib/main.dart` — `MaterialApp` (title `Klinik APP`, banner off) → `home: HomePage()`.
-- `lib/ui/home_page.dart` = dashboard with 3 menus (Data Poli / Data Pegawai / Data Pasien), each pushing its list page. List → detail pages follow the same pattern: `poli_page`→`poli_detail`, `pegawai_page`→`pegawai_detail`, `pasien_page`→`pasien_detail`. Only the "Poli Anak" card in `poli_page.dart` is wired (tutorial state); Pegawai/Pasien lists wire every row.
-- Data classes in `lib/model/` (`Poli`, `Pegawai`, `Pasien`) — mutable fields, camelCase names, sample data hardcoded in the list pages.
+- Entry point: `lib/main.dart` — `MaterialApp` (title `Klinik APP`, banner off) → `home: HomePage()`. (It uses a root-relative import `import '/ui/home_page.dart';`; every other file uses normal relative imports.)
+- `lib/ui/home_page.dart` = dashboard with 3 menus (Data Poli / Data Pegawai / Data Pasien), each pushing its list page. The same pattern repeats per entity (`poli` / `pegawai` / `pasien`): `*_page` (list, sample data hardcoded in a State field) → `*_item` (row, tap → detail) → `*_detail` (shows fields + Ubah/Hapus buttons) → `*_form` (add) / `*_update_form` (edit). All three lists are fully wired; each list page's AppBar "+" adds an item.
+- Deletion propagates via `Navigator.pop(context, true)` from the detail page → `onDeleted` callback on the item → `setState` remove in the list page. Edits mutate the shared model object in place (`widget.poli.namaPoli = ...`), so the list reflects changes without any notification — the same instance lives in the list.
+- Data classes in `lib/model/` (`Poli`, `Pegawai`, `Pasien`) — mutable fields, camelCase names, unused `id` field. Forms pop the new/edited model with no validation: `_formKey` exists but `validate()` is never called and fields have no validators. Data is in-memory only; nothing persists across restarts.
+- Pegawai password is `obscureText: true` in both forms and deliberately not shown in `pegawai_detail.dart` — keep it that way.
 - No state management, no backend, no HTTP, no assets, no fonts. Only runtime dependency besides Flutter SDK is `cupertino_icons`.
 - Android package: `com.example.klinik_app` (`android/app/src/main/kotlin/...`).
 
