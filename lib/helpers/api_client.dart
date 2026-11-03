@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 
-// ponytail: baseUrl masih contoh — ganti dengan endpoint project mockapi milikmu
-// (pertemuan 10). Selama belum diganti, semua request API ke luar akan gagal.
+// ponytail: semua request API gagal kalau endpoint ini mati/diganti — cek poli/pegawai/pasien di mockapi kalau ada 404.
 final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://example.invalid/',
+    baseUrl: 'https://6ae9920d3d3dd3d37be5292f.mockapi.io/',
     connectTimeout: 5000,
     receiveTimeout: 3000));
 
