@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 // ponytail: semua request API gagal kalau endpoint ini mati/diganti — cek poli/pegawai/pasien di mockapi kalau ada 404.
 final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://6ae9920d3d3dd3d37be5292f.mockapi.io/',
+    baseUrl: 'https://6ae9a00e3d3dd3d37be55467.mockapi.io/',
     connectTimeout: 5000,
     receiveTimeout: 3000));
 
