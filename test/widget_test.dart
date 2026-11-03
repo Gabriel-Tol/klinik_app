@@ -68,4 +68,32 @@ void main() {
     expect(find.text('No. RM : RM-0001'), findsOneWidget);
     expect(find.text('Alamat : Jl. Melati No. 10, Bandung'), findsOneWidget);
   });
+
+  testWidgets('Hapus pegawai minta konfirmasi: Batal batal, Hapus menghapus',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+    await _bukaDrawer(tester);
+    await tester.tap(find.text('Pegawai'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Budi Santoso'));
+    await tester.pumpAndSettle();
+
+    // Tombol Hapus membuka dialog konfirmasi, Batal membatalkan.
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Hapus'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hapus Pegawai'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Batal'));
+    await tester.pumpAndSettle();
+    expect(find.text('Detail Pegawai'), findsOneWidget);
+
+    // Kali ini konfirmasi: item hilang dari list.
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Hapus'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Hapus'));
+    await tester.pumpAndSettle();
+    expect(find.text('Data Pegawai'), findsOneWidget);
+    expect(find.text('Budi Santoso'), findsNothing);
+    expect(find.text('Siti Aminah'), findsOneWidget);
+  });
 }

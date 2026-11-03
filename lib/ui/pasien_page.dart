@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../widget/sidebar.dart';
 import '../model/pasien.dart';
 import 'pasien_form.dart';
 import 'pasien_item.dart';
@@ -58,6 +59,7 @@ class _PasienPageState extends State<PasienPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const Sidebar(),
       appBar: AppBar(
         title: const Text("Data Pasien"),
         actions: [
