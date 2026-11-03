@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/poli.dart';
+import '../service/poli_service.dart';
 
 class PoliUpdateForm extends StatefulWidget {
   final Poli poli;
@@ -15,10 +16,17 @@ class _PoliUpdateFormState extends State<PoliUpdateForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _namaPoliCtrl;
 
+  Future<void> getData() async {
+    final data = await PoliService().getById(widget.poli.id.toString());
+    if (!mounted) return;
+    setState(() => _namaPoliCtrl.text = data.namaPoli);
+  }
+
   @override
   void initState() {
     super.initState();
     _namaPoliCtrl = TextEditingController(text: widget.poli.namaPoli);
+    getData();
   }
 
   @override
@@ -55,11 +63,12 @@ class _PoliUpdateFormState extends State<PoliUpdateForm> {
 
   Widget _tombolSimpan() {
     return ElevatedButton(
-      onPressed: () {
-        Navigator.pop(
-          context,
-          Poli(namaPoli: _namaPoliCtrl.text),
-        );
+      onPressed: () async {
+        final poli = Poli(namaPoli: _namaPoliCtrl.text);
+        final hasil =
+            await PoliService().ubah(poli, widget.poli.id.toString());
+        if (!mounted) return;
+        Navigator.pop(context, hasil);
       },
       child: const Text("Simpan Perubahan"),
     );

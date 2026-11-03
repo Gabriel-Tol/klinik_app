@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/pegawai.dart';
+import '../service/pegawai_service.dart';
 
 class PegawaiForm extends StatefulWidget {
   const PegawaiForm({super.key});
@@ -50,7 +51,7 @@ class _PegawaiFormState extends State<PegawaiForm> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final pegawai = Pegawai(
                     nip: _nipCtrl.text,
                     nama: _namaCtrl.text,
@@ -59,7 +60,9 @@ class _PegawaiFormState extends State<PegawaiForm> {
                     email: _emailCtrl.text,
                     password: _passwordCtrl.text,
                   );
-                  Navigator.pop(context, pegawai);
+                  final hasil = await PegawaiService().simpan(pegawai);
+                  if (!context.mounted) return;
+                  Navigator.pop(context, hasil);
                 },
                 child: const Text("Simpan"),
               ),

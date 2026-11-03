@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/pasien.dart';
+import '../service/pasien_service.dart';
 
 class PasienUpdateForm extends StatefulWidget {
   final Pasien pasien;
@@ -19,6 +20,18 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
   late final TextEditingController _nomorTeleponCtrl;
   late final TextEditingController _alamatCtrl;
 
+  Future<void> getData() async {
+    final data = await PasienService().getById(widget.pasien.id.toString());
+    if (!mounted) return;
+    setState(() {
+      _nomorRmCtrl.text = data.nomorRm;
+      _namaCtrl.text = data.nama;
+      _tanggalLahirCtrl.text = data.tanggalLahir;
+      _nomorTeleponCtrl.text = data.nomorTelepon;
+      _alamatCtrl.text = data.alamat;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +40,7 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
     _tanggalLahirCtrl = TextEditingController(text: widget.pasien.tanggalLahir);
     _nomorTeleponCtrl = TextEditingController(text: widget.pasien.nomorTelepon);
     _alamatCtrl = TextEditingController(text: widget.pasien.alamat);
+    getData();
   }
 
   @override
@@ -55,18 +69,19 @@ class _PasienUpdateFormState extends State<PasienUpdateForm> {
               TextField(controller: _alamatCtrl, decoration: const InputDecoration(labelText: "Alamat")),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(
-                    context,
-                    Pasien(
-                      id: widget.pasien.id,
-                      nomorRm: _nomorRmCtrl.text,
-                      nama: _namaCtrl.text,
-                      tanggalLahir: _tanggalLahirCtrl.text,
-                      nomorTelepon: _nomorTeleponCtrl.text,
-                      alamat: _alamatCtrl.text,
-                    ),
+                onPressed: () async {
+                  final pasien = Pasien(
+                    id: widget.pasien.id,
+                    nomorRm: _nomorRmCtrl.text,
+                    nama: _namaCtrl.text,
+                    tanggalLahir: _tanggalLahirCtrl.text,
+                    nomorTelepon: _nomorTeleponCtrl.text,
+                    alamat: _alamatCtrl.text,
                   );
+                  final hasil = await PasienService()
+                      .ubah(pasien, widget.pasien.id.toString());
+                  if (!context.mounted) return;
+                  Navigator.pop(context, hasil);
                 },
                 child: const Text("Simpan Perubahan"),
               ),

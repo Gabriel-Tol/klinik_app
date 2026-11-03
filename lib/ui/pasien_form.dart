@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/pasien.dart';
+import '../service/pasien_service.dart';
 
 class PasienForm extends StatefulWidget {
   const PasienForm({super.key});
@@ -43,7 +44,7 @@ class _PasienFormState extends State<PasienForm> {
               TextField(controller: _alamatCtrl, decoration: const InputDecoration(labelText: "Alamat")),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final pasien = Pasien(
                     nomorRm: _nomorRmCtrl.text,
                     nama: _namaCtrl.text,
@@ -51,7 +52,9 @@ class _PasienFormState extends State<PasienForm> {
                     nomorTelepon: _nomorTeleponCtrl.text,
                     alamat: _alamatCtrl.text,
                   );
-                  Navigator.pop(context, pasien);
+                  final hasil = await PasienService().simpan(pasien);
+                  if (!context.mounted) return;
+                  Navigator.pop(context, hasil);
                 },
                 child: const Text("Simpan"),
               ),

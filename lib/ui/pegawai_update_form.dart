@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../model/pegawai.dart';
+import '../service/pegawai_service.dart';
 
 class PegawaiUpdateForm extends StatefulWidget {
   final Pegawai pegawai;
@@ -20,6 +21,19 @@ class _PegawaiUpdateFormState extends State<PegawaiUpdateForm> {
   late final TextEditingController _emailCtrl;
   late final TextEditingController _passwordCtrl;
 
+  Future<void> getData() async {
+    final data = await PegawaiService().getById(widget.pegawai.id.toString());
+    if (!mounted) return;
+    setState(() {
+      _nipCtrl.text = data.nip;
+      _namaCtrl.text = data.nama;
+      _tanggalLahirCtrl.text = data.tanggalLahir;
+      _nomorTeleponCtrl.text = data.nomorTelepon;
+      _emailCtrl.text = data.email;
+      _passwordCtrl.text = data.password;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +43,7 @@ class _PegawaiUpdateFormState extends State<PegawaiUpdateForm> {
     _nomorTeleponCtrl = TextEditingController(text: widget.pegawai.nomorTelepon);
     _emailCtrl = TextEditingController(text: widget.pegawai.email);
     _passwordCtrl = TextEditingController(text: widget.pegawai.password);
+    getData();
   }
 
   @override
@@ -63,19 +78,20 @@ class _PegawaiUpdateFormState extends State<PegawaiUpdateForm> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(
-                    context,
-                    Pegawai(
-                      id: widget.pegawai.id,
-                      nip: _nipCtrl.text,
-                      nama: _namaCtrl.text,
-                      tanggalLahir: _tanggalLahirCtrl.text,
-                      nomorTelepon: _nomorTeleponCtrl.text,
-                      email: _emailCtrl.text,
-                      password: _passwordCtrl.text,
-                    ),
+                onPressed: () async {
+                  final pegawai = Pegawai(
+                    id: widget.pegawai.id,
+                    nip: _nipCtrl.text,
+                    nama: _namaCtrl.text,
+                    tanggalLahir: _tanggalLahirCtrl.text,
+                    nomorTelepon: _nomorTeleponCtrl.text,
+                    email: _emailCtrl.text,
+                    password: _passwordCtrl.text,
                   );
+                  final hasil =
+                      await PegawaiService().ubah(pegawai, widget.pegawai.id.toString());
+                  if (!context.mounted) return;
+                  Navigator.pop(context, hasil);
                 },
                 child: const Text("Simpan Perubahan"),
               ),

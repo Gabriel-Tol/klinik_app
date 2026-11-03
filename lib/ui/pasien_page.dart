@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../widget/sidebar.dart';
 import '../model/pasien.dart';
+import '../service/pasien_service.dart';
+import '../widget/sidebar.dart';
+import 'pasien_detail.dart';
 import 'pasien_form.dart';
 import 'pasien_item.dart';
-import 'pasien_detail.dart';
 
 class PasienPage extends StatefulWidget {
   const PasienPage({super.key});
@@ -14,29 +15,9 @@ class PasienPage extends StatefulWidget {
 }
 
 class _PasienPageState extends State<PasienPage> {
-  final List<Pasien> daftarPasien = [
-    Pasien(
-      nomorRm: 'RM-0001',
-      nama: 'Rina Marlina',
-      tanggalLahir: '1992-07-15',
-      nomorTelepon: '081111222333',
-      alamat: 'Jl. Melati No. 10, Bandung',
-    ),
-    Pasien(
-      nomorRm: 'RM-0002',
-      nama: 'Dedi Kurniawan',
-      tanggalLahir: '1987-11-23',
-      nomorTelepon: '082222333444',
-      alamat: 'Jl. Mawar No. 5, Bandung',
-    ),
-    Pasien(
-      nomorRm: 'RM-0003',
-      nama: 'Putri Anggraini',
-      tanggalLahir: '2001-03-08',
-      nomorTelepon: '083333444555',
-      alamat: 'Jl. Kenanga No. 7, Bandung',
-    ),
-  ];
+  Stream<List<Pasien>> getList() async* {
+    yield await PasienService().listData();
+  }
 
   Future<void> _tambahPasien() async {
     final pasien = await Navigator.push<Pasien>(
@@ -45,15 +26,13 @@ class _PasienPageState extends State<PasienPage> {
     );
     if (!mounted || pasien == null) return;
 
-    setState(() => daftarPasien.add(pasien));
-    final dihapus = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (context) => PasienDetail(pasien: pasien)),
     );
     if (!mounted) return;
-    setState(() {
-      if (dihapus == true) daftarPasien.remove(pasien);
-    });
+    // setState membuat stream getList() baru, jadi daftar diambil ulang dari API.
+    setState(() {});
   }
 
   @override
@@ -63,20 +42,26 @@ class _PasienPageState extends State<PasienPage> {
       appBar: AppBar(
         title: const Text("Data Pasien"),
         actions: [
-          GestureDetector(child: const Icon(Icons.add), onTap: _tambahPasien),
+          GestureDetector(onTap: _tambahPasien, child: const Icon(Icons.add)),
         ],
       ),
-      body: ListView(
-        children: daftarPasien
-            .map(
-              (pasien) => PasienItem(
-                pasien: pasien,
-                onDetailClosed: (dihapus) => setState(() {
-                  if (dihapus) daftarPasien.remove(pasien);
-                }),
-              ),
-            )
-            .toList(),
+      body: StreamBuilder<List<Pasien>>(
+        stream: getList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text(snapshot.error.toString());
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData) return const Text('Data Kosong');
+          final data = snapshot.data!;
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) => PasienItem(
+              pasien: data[index],
+              onDetailClosed: (_) => setState(() {}),
+            ),
+          );
+        },
       ),
     );
   }

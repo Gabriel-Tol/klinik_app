@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../widget/sidebar.dart';
 import '../model/pegawai.dart';
+import '../service/pegawai_service.dart';
+import '../widget/sidebar.dart';
+import 'pegawai_detail.dart';
 import 'pegawai_form.dart';
 import 'pegawai_item.dart';
-import 'pegawai_detail.dart';
 
 class PegawaiPage extends StatefulWidget {
   const PegawaiPage({super.key});
@@ -14,32 +15,9 @@ class PegawaiPage extends StatefulWidget {
 }
 
 class _PegawaiPageState extends State<PegawaiPage> {
-  final List<Pegawai> daftarPegawai = [
-    Pegawai(
-      nip: '198001012010011001',
-      nama: 'Budi Santoso',
-      tanggalLahir: '1980-01-01',
-      nomorTelepon: '081234567890',
-      email: 'budi@klinik.id',
-      password: 'rahasia123',
-    ),
-    Pegawai(
-      nip: '198502022015022002',
-      nama: 'Siti Aminah',
-      tanggalLahir: '1985-02-02',
-      nomorTelepon: '081298765432',
-      email: 'siti@klinik.id',
-      password: 'rahasia123',
-    ),
-    Pegawai(
-      nip: '199003032020033003',
-      nama: 'Andi Wijaya',
-      tanggalLahir: '1990-03-03',
-      nomorTelepon: '081377788899',
-      email: 'andi@klinik.id',
-      password: 'rahasia123',
-    ),
-  ];
+  Stream<List<Pegawai>> getList() async* {
+    yield await PegawaiService().listData();
+  }
 
   Future<void> _tambahPegawai() async {
     final pegawai = await Navigator.push<Pegawai>(
@@ -48,15 +26,13 @@ class _PegawaiPageState extends State<PegawaiPage> {
     );
     if (!mounted || pegawai == null) return;
 
-    setState(() => daftarPegawai.add(pegawai));
-    final dihapus = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (context) => PegawaiDetail(pegawai: pegawai)),
     );
     if (!mounted) return;
-    setState(() {
-      if (dihapus == true) daftarPegawai.remove(pegawai);
-    });
+    // setState membuat stream getList() baru, jadi daftar diambil ulang dari API.
+    setState(() {});
   }
 
   @override
@@ -66,20 +42,26 @@ class _PegawaiPageState extends State<PegawaiPage> {
       appBar: AppBar(
         title: const Text("Data Pegawai"),
         actions: [
-          GestureDetector(child: const Icon(Icons.add), onTap: _tambahPegawai),
+          GestureDetector(onTap: _tambahPegawai, child: const Icon(Icons.add)),
         ],
       ),
-      body: ListView(
-        children: daftarPegawai
-            .map(
-              (pegawai) => PegawaiItem(
-                pegawai: pegawai,
-                onDetailClosed: (dihapus) => setState(() {
-                  if (dihapus) daftarPegawai.remove(pegawai);
-                }),
-              ),
-            )
-            .toList(),
+      body: StreamBuilder<List<Pegawai>>(
+        stream: getList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text(snapshot.error.toString());
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData) return const Text('Data Kosong');
+          final data = snapshot.data!;
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) => PegawaiItem(
+              pegawai: data[index],
+              onDetailClosed: (_) => setState(() {}),
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../widget/sidebar.dart';
 import '../model/poli.dart';
-import 'poli_item.dart';
-import 'poli_form.dart';
+import '../service/poli_service.dart';
+import '../widget/sidebar.dart';
 import 'poli_detail.dart';
+import 'poli_form.dart';
+import 'poli_item.dart';
 
 class PoliPage extends StatefulWidget {
   const PoliPage({super.key});
@@ -14,12 +15,9 @@ class PoliPage extends StatefulWidget {
 }
 
 class _PoliPageState extends State<PoliPage> {
-  final List<Poli> _daftarPoli = [
-    Poli(namaPoli: "Poli Anak"),
-    Poli(namaPoli: "Poli Kandungan"),
-    Poli(namaPoli: "Poli Gigi"),
-    Poli(namaPoli: "Poli THT"),
-  ];
+  Stream<List<Poli>> getList() async* {
+    yield await PoliService().listData();
+  }
 
   Future<void> _tambahPoli() async {
     final poli = await Navigator.push<Poli>(
@@ -28,15 +26,13 @@ class _PoliPageState extends State<PoliPage> {
     );
     if (!mounted || poli == null) return;
 
-    setState(() => _daftarPoli.add(poli));
-    final dihapus = await Navigator.push<bool>(
+    await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (context) => PoliDetail(poli: poli)),
     );
     if (!mounted) return;
-    setState(() {
-      if (dihapus == true) _daftarPoli.remove(poli);
-    });
+    // setState membuat stream getList() baru, jadi daftar diambil ulang dari API.
+    setState(() {});
   }
 
   @override
@@ -46,20 +42,26 @@ class _PoliPageState extends State<PoliPage> {
       appBar: AppBar(
         title: const Text("Data Poli"),
         actions: [
-          GestureDetector(child: const Icon(Icons.add), onTap: _tambahPoli),
+          GestureDetector(onTap: _tambahPoli, child: const Icon(Icons.add)),
         ],
       ),
-      body: ListView(
-        children: _daftarPoli
-            .map(
-              (poli) => PoliItem(
-                poli: poli,
-                onDetailClosed: (dihapus) => setState(() {
-                  if (dihapus) _daftarPoli.remove(poli);
-                }),
-              ),
-            )
-            .toList(),
+      body: StreamBuilder<List<Poli>>(
+        stream: getList(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text(snapshot.error.toString());
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData) return const Text('Data Kosong');
+          final data = snapshot.data!;
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) => PoliItem(
+              poli: data[index],
+              onDetailClosed: (_) => setState(() {}),
+            ),
+          );
+        },
       ),
     );
   }
