@@ -31,9 +31,8 @@ class PasienService {
     return result;
   }
 
-  Future<Pasien> hapus(Pasien pasien) async {
-    final Response response = await ApiClient().delete('pasien/${pasien.id}');
-    Pasien result = Pasien.fromJson(response.data);
-    return result;
+  // json-server membalas DELETE dengan body kosong, jadi hasilnya tidak diparse.
+  Future<void> hapus(Pasien pasien) async {
+    await ApiClient().delete('pasien/${pasien.id}');
   }
 }

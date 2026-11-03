@@ -16,7 +16,7 @@ class Pasien {
   });
 
   factory Pasien.fromJson(Map<String, dynamic> json) => Pasien(
-        id: json["id"],
+        id: json["id"]?.toString(),
         nomorRm: json["nomor_rm"],
         nama: json["nama"],
         tanggalLahir: json["tanggal_lahir"],

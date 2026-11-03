@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 
-// ponytail: semua request API gagal kalau endpoint ini mati/diganti — cek poli/pegawai/pasien di mockapi kalau ada 404.
+// ponytail: backend = json-server lokal — jalankan `npx json-server@0.17.4 db.json` dulu;
+// semua request gagal kalau server tidak jalan atau port 3000 dipakai aplikasi lain.
 final Dio dio = Dio(BaseOptions(
-    baseUrl: 'https://6ae9a00e3d3dd3d37be55467.mockapi.io/',
+    baseUrl: 'http://localhost:3000/',
     connectTimeout: 5000,
     receiveTimeout: 3000));
 

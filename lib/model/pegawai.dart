@@ -18,7 +18,7 @@ class Pegawai {
   });
 
   factory Pegawai.fromJson(Map<String, dynamic> json) => Pegawai(
-        id: json["id"],
+        id: json["id"]?.toString(),
         nip: json["nip"],
         nama: json["nama"],
         tanggalLahir: json["tanggal_lahir"],

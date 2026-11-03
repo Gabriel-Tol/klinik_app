@@ -1,0 +1,75 @@
+{
+  "poli": [
+    {
+      "id": 1,
+      "nama_poli": "Poli Anak"
+    },
+    {
+      "id": 2,
+      "nama_poli": "Poli Kandungan"
+    },
+    {
+      "id": 3,
+      "nama_poli": "Poli Gigi"
+    },
+    {
+      "id": 4,
+      "nama_poli": "Poli THT"
+    }
+  ],
+  "pegawai": [
+    {
+      "id": 1,
+      "nip": "198001012010011001",
+      "nama": "Budi Santoso",
+      "tanggal_lahir": "1980-01-01",
+      "nomor_telepon": "081234567890",
+      "email": "budi@klinik.id",
+      "password": "rahasia123"
+    },
+    {
+      "id": 2,
+      "nip": "198502022015022002",
+      "nama": "Siti Aminah",
+      "tanggal_lahir": "1985-02-02",
+      "nomor_telepon": "081298765432",
+      "email": "siti@klinik.id",
+      "password": "rahasia123"
+    },
+    {
+      "id": 3,
+      "nip": "199003032020033003",
+      "nama": "Andi Wijaya",
+      "tanggal_lahir": "1990-03-03",
+      "nomor_telepon": "081377788899",
+      "email": "andi@klinik.id",
+      "password": "rahasia123"
+    }
+  ],
+  "pasien": [
+    {
+      "id": 1,
+      "nomor_rm": "RM-0001",
+      "nama": "Rina Marlina",
+      "tanggal_lahir": "1992-07-15",
+      "nomor_telepon": "081111222333",
+      "alamat": "Jl. Melati No. 10, Bandung"
+    },
+    {
+      "id": 2,
+      "nomor_rm": "RM-0002",
+      "nama": "Dedi Kurniawan",
+      "tanggal_lahir": "1987-11-23",
+      "nomor_telepon": "082222333444",
+      "alamat": "Jl. Mawar No. 5, Bandung"
+    },
+    {
+      "id": 3,
+      "nomor_rm": "RM-0003",
+      "nama": "Putri Anggraini",
+      "tanggal_lahir": "2001-03-08",
+      "nomor_telepon": "083333444555",
+      "alamat": "Jl. Kenanga No. 7, Bandung"
+    }
+  ]
+}

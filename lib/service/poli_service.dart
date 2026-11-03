@@ -31,9 +31,8 @@ class PoliService {
     return result;
   }
 
-  Future<Poli> hapus(Poli poli) async {
-    final Response response = await ApiClient().delete('poli/${poli.id}');
-    Poli result = Poli.fromJson(response.data);
-    return result;
+  // json-server membalas DELETE dengan body kosong, jadi hasilnya tidak diparse.
+  Future<void> hapus(Poli poli) async {
+    await ApiClient().delete('poli/${poli.id}');
   }
 }
